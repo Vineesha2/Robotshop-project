@@ -14,8 +14,8 @@
 
     - name: Install Mongo Shell
       ansible.builtin.dnf:
-        state: installed
         name: mongodb-mongosh
+        state: installed
 
     - name: Load Schema
       ansible.builtin.shell: mongosh --host mongodb-dev.shamidevops.online </app/db/master-data.js
