@@ -1,3 +1,7 @@
+- name: Catalogue
+  hosts: all
+  become: true
+  tasks:
 - name: Install nodejs
   ansible.builtin.dnf:
     name: nodejs
