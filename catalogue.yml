@@ -1,22 +1,54 @@
-- name: nodejs
-  hosts: all
-  become: true
-  tasks:
-    - name: Install nodejs
-      ansible.builtin.dnf:
-        name: nodejs
-        state: installed
+- name: Install nodejs
+  ansible.builtin.dnf:
+    name: nodejs
+    state : installed
 
-    - name: Copy mongodb repo file
-      ansible.builtin.copy:
-        src: mongo.repo
-        dest: /etc/yum.repos.d/mongo.repo
+- name: Add application user
+  ansible.builtin.user:
+    name: roboshop
 
-    - name: Install Mongo Shell
-      ansible.builtin.dnf:
-        name: mongodb-mongosh
-        state: installed
+- name: Remove app content
+  ansible.builtin.file:
+    path: /app
+    state: absent
 
-    - name: Load Schema
-      ansible.builtin.shell: mongosh --host 172.31.16.189 </app/db/master-data.js
+- name: Create app directory
+  ansible.builtin.file:
+    path: /app
+    state: directory
 
+- name: Download app content
+  ansible.builtin.unarchive:
+    src: https://roboshop-artifacts.s3.amazonaws.com/{{component}}-v3.zip
+    dest: /app
+    remote_src: yes
+
+- name: install NodeJs Dependencies
+  ansible.builtin.shell: npm install
+  args:
+    chdir: /app
+
+- name: Copy component service file
+  ansible.builtin.copy:
+    src: "{{ component }}.service"
+    dest: /etc/systemd/system/{{component}}.service
+
+- name: Start Service
+  ansible.builtin.systemd:
+    name: "{{ component }}"
+    daemon_reload: true
+    enabled: true
+    state: restarted
+
+- name: Copy MongoDB repo file
+  ansible.builtin.copy:
+    src: mongo.repo
+    dest: /etc/yum.repos.d/mongo.repo
+
+- name: Install Mongo Shell
+  ansible.builtin.dnf:
+    state: installed
+    name: mongodb-mongosh
+
+- name: Load Schema
+  ansible.builtin.shell: mongosh --host mongodb-dev.shamidevops.online </app/db/master-data.js
