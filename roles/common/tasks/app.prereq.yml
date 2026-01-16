@@ -14,7 +14,7 @@
 - name: Remove app content
   ansible.builtin.file:
     path: /app
-    state:  absent
+    state: absent
 
 - name: Create app directory
   ansible.builtin.file:

@@ -6,7 +6,7 @@
       - python3-devel
     state: installed
 
-- name: Load App Pre-Req
+- name: Load App PreReq
   ansible.builtin.import_role:
     name: common
     tasks_from: app.prereq.yml
