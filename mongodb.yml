@@ -1,4 +1,4 @@
-- name: frontend
+- name: mongodb
   hosts: all
   become: true
   tasks:
@@ -9,7 +9,7 @@
 
     - name: Install mongodb
       ansible.builtin.dnf:
-        name: mongodb
+        name: mongodb-org
         state: installed
 
     - name: Replace listen address in mongodb
