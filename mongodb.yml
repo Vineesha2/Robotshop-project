@@ -1,0 +1,27 @@
+- name: frontend
+  hosts: all
+  become: true
+  tasks:
+    - name: Copy mongorepo
+      ansible.builtin.copy:
+        name: mongodb-org
+        state: installed
+
+    - name: Install mongodb
+      ansible.builtin.dnf:
+        name: mongodb
+        state: installed
+
+    - name: Replace listen address in mongodb
+      ansible.builtin.replace:
+        path: /etc/mongod.conf
+        regexp: 127.0.0.1
+        replace: 0.0.0.0
+
+    - name: Start mongodb
+      ansible.builtin.systemd_service:
+        name: mongodb
+        state: restarted
+        enabled: yes
+
+
